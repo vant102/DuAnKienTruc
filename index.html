@@ -18,7 +18,12 @@
             .id { font-size: 0.7em; color: #d4a373; font-weight: bold; }
             .name { font-size: 1.2em; color: #1a2a3a; font-weight: bold; margin: 5px 0; }
             .meta { color: #777; font-size: 0.9em; }
-            .btn { background: #1a2a3a; color: white; text-align: center; padding: 15px; font-weight: bold; text-transform: uppercase; }
+            
+            /* Style cho nút bấm */
+            .btn { text-align: center; padding: 15px; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
+            .btn-active { background: #1a2a3a; color: white; cursor: pointer; }
+            .btn-active:hover { background: #d4a373; }
+            .btn-disabled { background: #eeeeee; color: #aaaaaa; cursor: not-allowed; }
         </style>
     </head>
     <body>
@@ -26,43 +31,43 @@
             <h1>DANH MỤC DỰ ÁN ONLINE</h1>
             <div class="grid">
     
-                <a href="assets/NhaNgoai/Present/" class="card">
+                <div class="card" style="cursor: default;">
                     <div class="thumb-box"><img src="assets/NhaNgoai/Thumb.jpg"></div>
                     <div class="info">
                         <div class="id">ID: 2026_001</div>
                         <div class="name">Nhà Ngoại</div>
-                        <div class="meta">🖼️ 0 ảnh trình chiếu</div>
+                        <div class="meta">Trạng thái: Đang cập nhật</div>
                     </div>
-                    <div class="btn">Xem chi tiết</div>
-                </a>
+                    <div class="btn btn-disabled">Hiện chưa có dữ liệu</div>
+                </div>
         
-                <a href="assets/ShowRoomDNS/Present/" class="card">
+                <div class="card" style="cursor: default;">
                     <div class="thumb-box"><img src="assets/ShowRoomDNS/Thumb.jpg"></div>
                     <div class="info">
                         <div class="id">ID: 2025_001</div>
                         <div class="name">ShowRoom DNS</div>
-                        <div class="meta">🖼️ 0 ảnh trình chiếu</div>
+                        <div class="meta">Trạng thái: Đang cập nhật</div>
                     </div>
-                    <div class="btn">Xem chi tiết</div>
-                </a>
+                    <div class="btn btn-disabled">Hiện chưa có dữ liệu</div>
+                </div>
         
-                <a href="assets/Lophocthongminh/Present/" class="card">
+                <div class="card" style="cursor: default;">
                     <div class="thumb-box"><img src="assets/Lophocthongminh/Thumb.jpg"></div>
                     <div class="info">
                         <div class="id">ID: 2025_003</div>
                         <div class="name">Lớp học thông minh</div>
-                        <div class="meta">🖼️ 0 ảnh trình chiếu</div>
+                        <div class="meta">Trạng thái: Đang cập nhật</div>
                     </div>
-                    <div class="btn">Xem chi tiết</div>
-                </a>
+                    <div class="btn btn-disabled">Hiện chưa có dữ liệu</div>
+                </div>
         
-                <a href="assets/ShowRoomVBMable/Present/" class="card">
+                <div class="card" style="cursor: default;">
                     <div class="thumb-box"><img src="assets/ShowRoomVBMable/Thumb.jpg"></div>
                     <div class="info">
                         <div class="id">ID: 2025_002</div>
                         <div class="name">ShowRoom VB-Mable</div>
-                        <div class="meta">🖼️ 0 ảnh trình chiếu</div>
+                        <div class="meta">Trạng thái: Đang cập nhật</div>
                     </div>
-                    <div class="btn">Xem chi tiết</div>
-                </a>
+                    <div class="btn btn-disabled">Hiện chưa có dữ liệu</div>
+                </div>
         </div></div></body></html>
