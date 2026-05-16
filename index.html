@@ -1,73 +1,111 @@
-
-    <!DOCTYPE html>
-    <html lang="vi">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Portfolio Kiến Trúc Online</title>
-        <style>
-            body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-            .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-            h1 { text-align: center; color: #1a2a3a; border-bottom: 3px solid #d4a373; padding-bottom: 15px; letter-spacing: 2px; }
-            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
-            .card { background: white; border: 1px solid #eee; border-radius: 12px; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; text-decoration: none; color: inherit; }
-            .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-            .thumb-box { width: 100%; height: 200px; background: #222; overflow: hidden; }
-            .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
-            .info { padding: 20px; flex-grow: 1; }
-            .id { font-size: 0.7em; color: #d4a373; font-weight: bold; }
-            .name { font-size: 1.2em; color: #1a2a3a; font-weight: bold; margin: 5px 0; }
-            .meta { color: #777; font-size: 0.9em; }
-            
-            /* Style cho nút bấm */
-            .btn { text-align: center; padding: 15px; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
-            .btn-active { background: #1a2a3a; color: white; cursor: pointer; }
-            .btn-active:hover { background: #d4a373; }
-            .btn-disabled { background: #eeeeee; color: #aaaaaa; cursor: not-allowed; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>DANH MỤC DỰ ÁN ONLINE</h1>
-            <div class="grid">
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Tracker Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
     
-                <div class="card" style="cursor: default;">
-                    <div class="thumb-box"><img src="assets/NhaNgoai/Thumb.jpg"></div>
-                    <div class="info">
-                        <div class="id">ID: 2026_001</div>
-                        <div class="name">Nhà Ngoại</div>
-                        <div class="meta">Trạng thái: Đang cập nhật</div>
-                    </div>
-                    <div class="btn btn-disabled">Hiện chưa có dữ liệu</div>
+    <div class="container glass-panel">
+        <header>
+            <div class="header-main">
+                <div class="title-group">
+                    <img src="logo.jpg" alt="Logo cá nhân" class="site-logo">
+                    <h1>My Progress Board</h1>
                 </div>
-        
-                <div class="card" style="cursor: default;">
-                    <div class="thumb-box"><img src="assets/ShowRoomDNS/Thumb.jpg"></div>
-                    <div class="info">
-                        <div class="id">ID: 2025_001</div>
-                        <div class="name">ShowRoom DNS</div>
-                        <div class="meta">Trạng thái: Đang cập nhật</div>
-                    </div>
-                    <div class="btn btn-disabled">Hiện chưa có dữ liệu</div>
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="project-working">Project Working</button>
+                    <button class="tab-btn" data-target="study-plan">Study Plan</button>
+                    <button class="tab-btn" data-target="all-projects">All Project</button>
                 </div>
-        
-                <div class="card" style="cursor: default;">
-                    <div class="thumb-box"><img src="assets/Lophocthongminh/Thumb.jpg"></div>
-                    <div class="info">
-                        <div class="id">ID: 2025_003</div>
-                        <div class="name">Lớp học thông minh</div>
-                        <div class="meta">Trạng thái: Đang cập nhật</div>
+            </div>
+            <div class="header-actions">
+                <a href="https://docs.google.com/spreadsheets/d/1Nhk9Ai2b9tlAGwmznYmqQ_siVDmf7AIqXfBvXJ0X4Z0/edit?gid=8436140#gid=8436140" target="_blank" class="btn btn-update">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    Update Progress
+                </a>
+            </div>
+        </header>
+
+        <main>
+            <section id="project-working" class="tab-content active">
+                <div class="board-header">
+                    <h2>Dự án đang thực hiện</h2>
+                    <div class="status-legend">
+                        <span class="badge status-hoanthanh">Hoàn thành</span>
+                        <span class="badge status-dangthicong">Đang thi công</span>
+                        <span class="badge status-trienkhai">Triển khai</span>
+                        <span class="badge status-phuongan">Phương án</span>
+                        <span class="badge status-tamdung">Tạm dừng</span>
                     </div>
-                    <div class="btn btn-disabled">Hiện chưa có dữ liệu</div>
                 </div>
-        
-                <div class="card" style="cursor: default;">
-                    <div class="thumb-box"><img src="assets/ShowRoomVBMable/Thumb.jpg"></div>
-                    <div class="info">
-                        <div class="id">ID: 2025_002</div>
-                        <div class="name">ShowRoom VB-Mable</div>
-                        <div class="meta">Trạng thái: Đang cập nhật</div>
+                <div class="grid-container" id="project-grid">
+                    <!-- Cards will be injected here by JS -->
+                </div>
+            </section>
+
+            <section id="study-plan" class="tab-content">
+                <div class="board-header">
+                    <h2>Kế hoạch học tập</h2>
+                    <div class="status-legend">
+                        <span class="badge status-hoanthanh">Đã hoàn thành</span>
+                        <span class="badge status-dangthicong">Đang học</span>
+                        <span class="badge status-phuongan">Chuẩn bị</span>
+                        <span class="badge status-tamdung">Tạm dừng</span>
                     </div>
-                    <div class="btn btn-disabled">Hiện chưa có dữ liệu</div>
                 </div>
-        </div></div></body></html>
+                <div class="grid-container" id="study-grid">
+                    <!-- Cards will be injected here by JS -->
+                </div>
+            </section>
+
+            <section id="all-projects" class="tab-content">
+                <div class="board-header">
+                    <h2>All Project</h2>
+                    <div class="filters">
+                        <input type="text" id="searchKeyword" class="filter-input" placeholder="Tìm tên, địa điểm...">
+                        <select id="filterNam" class="filter-input"><option value="">Tất cả năm</option></select>
+                        <select id="filterTheLoai" class="filter-input"><option value="">Tất cả thể loại</option></select>
+                        <select id="filterTrangThai" class="filter-input"><option value="">Tất cả trạng thái</option></select>
+                    </div>
+                </div>
+                <div class="grid-container library-grid" id="library-grid">
+                    <!-- Cards will be injected here by JS -->
+                </div>
+            </section>
+        </main>
+    </div> <!-- Kết thúc container -->
+
+    <!-- Glass Modal -->
+    <div id="details-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <button class="modal-close" onclick="closeModal(event)">&times;</button>
+            <div class="modal-header">
+                <h2 id="modal-title">Chi tiết</h2>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <div id="modal-info" class="modal-info-grid"></div>
+                <div id="modal-gallery" class="modal-gallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox for Fullscreen Image Viewing -->
+    <div id="lightbox" class="lightbox-overlay" onclick="closeLightbox(event)">
+        <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+        <button class="lightbox-prev" onclick="changeLightboxImage(-1, event)">&#10094;</button>
+        <img id="lightbox-img" class="lightbox-img" src="">
+        <button class="lightbox-next" onclick="changeLightboxImage(1, event)">&#10095;</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
