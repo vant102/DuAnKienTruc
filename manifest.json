@@ -8,9 +8,9 @@
   "description": "Widget thu nhỏ để check done công việc nhanh.",
   "icons": [
     {
-      "src": "logo.jpg",
+      "src": "logo.png",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png"
     }
   ]
 }
