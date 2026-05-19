@@ -671,7 +671,7 @@ function renderDailyTasks() {
 }
 
 window.changeTaskStatus = function(date, id, val) {
-    const task = dailyTasks[date].find(t => t.id === id);
+    const task = dailyTasks[date].find(t => String(t.id) === String(id));
     if (task) {
         task.done = (val === 'done');
         saveDailyTasks();
@@ -743,7 +743,7 @@ window.filterDailyTasks = function(type) {
 };
 
 window.toggleTaskDone = function(date, id) {
-    const task = dailyTasks[date].find(t => t.id === id);
+    const task = dailyTasks[date].find(t => String(t.id) === String(id));
     if (task) {
         task.done = !task.done;
         saveDailyTasks();
@@ -753,7 +753,7 @@ window.toggleTaskDone = function(date, id) {
 
 window.deleteTask = function(date, id) {
     if (confirm("Bạn có chắc chắn muốn xóa công việc này?")) {
-        dailyTasks[date] = dailyTasks[date].filter(t => t.id !== id);
+        dailyTasks[date] = dailyTasks[date].filter(t => String(t.id) !== String(id));
         // Clean empty dates
         if (dailyTasks[date].length === 0) delete dailyTasks[date];
         saveDailyTasks();
@@ -775,7 +775,7 @@ window.closeTaskModal = function(e) {
 };
 
 window.editTask = function(date, id) {
-    const task = dailyTasks[date].find(t => t.id === id);
+    const task = dailyTasks[date].find(t => String(t.id) === String(id));
     if (!task) return;
     
     document.getElementById('task-id').value = id; // Store ID means Edit mode
@@ -789,39 +789,42 @@ window.editTask = function(date, id) {
     document.getElementById('task-modal').classList.add('active');
 };
 
-document.getElementById('task-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const id = document.getElementById('task-id').value;
-    const today = getTodayString();
-    
-    if (!dailyTasks[today]) dailyTasks[today] = [];
-    
-    const newTask = {
-        id: id || Date.now().toString(),
-        type: document.getElementById('task-type').value,
-        startTime: document.getElementById('task-start-time').value,
-        endTime: document.getElementById('task-end-time').value,
-        title: document.getElementById('task-title').value,
-        note: document.getElementById('task-note').value,
-        done: false
-    };
+const taskForm = document.getElementById('task-form');
+if (taskForm) {
+    taskForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('task-id').value;
+        const today = getTodayString();
+        
+        if (!dailyTasks[today]) dailyTasks[today] = [];
+        
+        const newTask = {
+            id: id || Date.now().toString(),
+            type: document.getElementById('task-type').value,
+            startTime: document.getElementById('task-start-time').value,
+            endTime: document.getElementById('task-end-time').value,
+            title: document.getElementById('task-title').value,
+            note: document.getElementById('task-note').value,
+            done: false
+        };
 
-    if (id) {
-        // Edit mode (preserve done status)
-        const idx = dailyTasks[today].findIndex(t => t.id === id);
-        if (idx !== -1) {
-            newTask.done = dailyTasks[today][idx].done;
-            dailyTasks[today][idx] = newTask;
+        if (id) {
+            // Edit mode (preserve done status)
+            const idx = dailyTasks[today].findIndex(t => String(t.id) === String(id));
+            if (idx !== -1) {
+                newTask.done = dailyTasks[today][idx].done;
+                dailyTasks[today][idx] = newTask;
+            }
+        } else {
+            // Add mode
+            dailyTasks[today].push(newTask);
         }
-    } else {
-        // Add mode
-        dailyTasks[today].push(newTask);
-    }
-    
-    saveDailyTasks();
-    closeTaskModal();
-    renderDailyTasks();
-});
+        
+        saveDailyTasks();
+        closeTaskModal();
+        renderDailyTasks();
+    });
+}
 
 // Auto Archive Logic
 async function autoArchiveOldTasks() {
