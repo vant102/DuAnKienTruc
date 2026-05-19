@@ -22,10 +22,10 @@
                     <h1>My Progress Board</h1>
                 </div>
                 <div class="tabs">
-                    <button class="tab-btn active" data-target="project-working">Project Working</button>
+                    <button class="tab-btn" data-target="project-working">Project Working</button>
                     <button class="tab-btn" data-target="study-plan">Study Plan</button>
-                    <button class="tab-btn" data-target="all-projects">All Project</button>
-                    <button class="tab-btn" id="daily-log-tab" data-target="daily-log" style="display: none;">Nhật Ký Ngày</button>
+                    <button class="tab-btn active" data-target="all-projects">All Project</button>
+                    <button class="tab-btn" data-target="daily-log">Nhật Ký Ngày</button>
                 </div>
             </div>
             <div class="header-actions">
@@ -37,7 +37,7 @@
         </header>
 
         <main>
-            <section id="project-working" class="tab-content active">
+            <section id="project-working" class="tab-content">
                 <div class="board-header">
                     <h2>Dự án đang thực hiện</h2>
                     <div class="status-legend">
@@ -68,7 +68,7 @@
                 </div>
             </section>
 
-            <section id="all-projects" class="tab-content">
+            <section id="all-projects" class="tab-content active">
                 <div class="board-header">
                     <h2>All Project</h2>
                     <div class="filters">
@@ -183,11 +183,17 @@
                     </div>
                     <div class="form-group">
                         <label>Tiêu đề công việc</label>
-                        <input type="text" id="task-title" class="filter-input" style="width: 100%;" required placeholder="Nhập tiêu đề...">
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="task-title" class="filter-input" style="flex: 1;" required placeholder="Nhập tiêu đề...">
+                            <button type="button" class="btn" id="voice-title-btn" title="Nhập bằng giọng nói" onclick="startVoiceInput('task-title', 'voice-title-btn')" style="padding: 0 12px; font-size: 1.2rem;">🎤</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Ghi chú</label>
-                        <textarea id="task-note" class="filter-input" style="width: 100%; height: 80px; resize: vertical;" placeholder="Ghi chú thêm..."></textarea>
+                        <div style="display: flex; gap: 8px; align-items: flex-start;">
+                            <textarea id="task-note" class="filter-input" style="flex: 1; height: 80px; resize: vertical;" placeholder="Ghi chú thêm..."></textarea>
+                            <button type="button" class="btn" id="voice-note-btn" title="Nhập bằng giọng nói" onclick="startVoiceInput('task-note', 'voice-note-btn')" style="padding: 0 12px; height: 40px; font-size: 1.2rem;">🎤</button>
+                        </div>
                     </div>
                     <div style="text-align: right; margin-top: 20px;">
                         <button type="button" class="btn" onclick="closeTaskModal()">Hủy</button>

@@ -5,13 +5,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
             const targetId = btn.getAttribute('data-target');
-            document.getElementById(targetId).classList.add('active');
+            const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:';
+            
+            if (isOnline && targetId !== 'all-projects' && sessionStorage.getItem('daily_log_unlocked') !== 'true') {
+                window.pendingTabTarget = targetId;
+                document.getElementById('pin-overlay').classList.add('active');
+                document.getElementById('pin-input').focus();
+                return;
+            }
+            
+            activateTab(btn, targetId);
         });
     });
+
+    function activateTab(btn, targetId) {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(targetId).classList.add('active');
+    }
 
     // Filter event listeners cho tab All Projects
     document.querySelectorAll('.filter-input').forEach(input => {
@@ -70,7 +83,7 @@ function getIconHTML(status) {
 }
 
 function createLocalLinkHandler(path) {
-    const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+    const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:';
     if (isOnline) return 'style="display: none;"'; // Ẩn nút nếu chạy online
     return `onclick="openLocalFolder('${path.replace(/\\/g, '\\\\')}'); event.stopPropagation(); return false;"`;
 }
@@ -186,7 +199,7 @@ function populateFilters(projects) {
 function renderAllProjects(projects) {
     const grid = document.getElementById('library-grid');
     grid.innerHTML = '';
-    const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+    const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:';
 
     projects.forEach(project => {
         const statusClass = getStatusClass(project.TrangThai);
@@ -270,7 +283,7 @@ window.openDetailsModal = async function(id, type) {
     if (type === 'All Projects') {
         const project = globalData['All Projects'].find(p => p.ID == id);
         if (project && project.Path) {
-            const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+            const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:';
             gallery.innerHTML = '<p>Đang tải ảnh album...</p>';
             try {
                 if (!isOnline) {
@@ -401,14 +414,12 @@ async function sha256(message) {
 }
 
 function initDailyLog() {
-    const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-    const tabBtn = document.getElementById('daily-log-tab');
+    const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:';
     
     // Security setup
     setupPinProtection();
 
     if (!isOnline || sessionStorage.getItem('daily_log_unlocked') === 'true') {
-        tabBtn.style.display = 'block';
         loadDailyTasks();
         if (!isOnline) {
             autoArchiveOldTasks();
@@ -475,10 +486,22 @@ window.verifyPin = async function() {
     
     if (hash === SECRET_PIN_HASH) {
         sessionStorage.setItem('daily_log_unlocked', 'true');
-        document.getElementById('daily-log-tab').style.display = 'block';
         closePinOverlay();
         loadDailyTasks();
         renderDailyTasks();
+        
+        if (window.pendingTabTarget) {
+            const targetBtn = document.querySelector(`.tab-btn[data-target="${window.pendingTabTarget}"]`);
+            if (targetBtn) {
+                const tabBtns = document.querySelectorAll('.tab-btn');
+                const tabContents = document.querySelectorAll('.tab-content');
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                targetBtn.classList.add('active');
+                document.getElementById(window.pendingTabTarget).classList.add('active');
+            }
+            window.pendingTabTarget = null;
+        }
     } else {
         document.getElementById('pin-error').style.display = 'block';
     }
@@ -520,48 +543,83 @@ function renderDailyTasks() {
     document.getElementById('daily-date-title').innerText = `${days[d.getDay()]}, ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
     
     let todayTasks = dailyTasks[today] || [];
-    
-    // Sort by start time
     todayTasks.sort((a, b) => (a.startTime || '24:00').localeCompare(b.startTime || '24:00'));
 
     const listEl = document.getElementById('daily-tasks-list');
-    listEl.innerHTML = '';
     
+    let tableHTML = `
+        <div class="daily-table-container">
+            <div style="background: #1e40af; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 1.1rem; text-transform: uppercase;">
+                CHECKLIST CÔNG VIỆC HÀNG NGÀY
+            </div>
+            <table class="daily-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">STT</th>
+                        <th style="text-align: left; min-width: 200px;">Công việc</th>
+                        <th style="text-align: left; min-width: 150px;">Mô tả chi tiết</th>
+                        <th style="width: 100px;">Bắt đầu</th>
+                        <th style="width: 100px;">Kết thúc</th>
+                        <th style="width: 80px;">Sửa/Xóa</th>
+                        <th style="width: 140px;">Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
     let hasTasks = false;
+    let stt = 1;
+    
     todayTasks.forEach(task => {
         if (currentDailyFilter !== 'all' && task.type !== currentDailyFilter) return;
         hasTasks = true;
         
         let typeInfo = getTaskTypeInfo(task.type);
-        let timeStr = task.startTime ? `${task.startTime}` : '--:--';
-        if (task.endTime) timeStr += ` - ${task.endTime}`;
+        const selectClass = task.done ? 'status-done' : 'status-waiting';
         
-        const html = `
-            <div class="task-item ${task.done ? 'done' : ''}">
-                <input type="checkbox" class="task-checkbox" ${task.done ? 'checked' : ''} onclick="toggleTaskDone('${today}', '${task.id}')">
-                <div class="task-content">
-                    <div class="task-header-row">
-                        <span class="task-time-range">${timeStr}</span>
-                        <span class="badge" style="background:${typeInfo.bg}; color:white;">${typeInfo.icon}</span>
-                        <span class="task-title-text">${task.title}</span>
-                    </div>
-                    ${task.note ? `<div class="task-note-text">${task.note}</div>` : ''}
-                </div>
-                <div class="task-actions">
-                    <button class="task-action-btn" onclick="editTask('${today}', '${task.id}')">✏️</button>
-                    <button class="task-action-btn delete" onclick="deleteTask('${today}', '${task.id}')">🗑</button>
-                </div>
-            </div>
+        tableHTML += `
+            <tr>
+                <td style="text-align: center;">${stt}</td>
+                <td>
+                    <span style="margin-right: 8px;" title="${typeInfo.name}">${typeInfo.icon}</span>
+                    <span style="font-weight: 500; ${task.done ? 'text-decoration: line-through; opacity: 0.7;' : ''}">${task.title}</span>
+                </td>
+                <td style="color: var(--text-secondary); font-size: 0.9em;">${task.note || ''}</td>
+                <td style="text-align: center;">${task.startTime || '-'}</td>
+                <td style="text-align: center;">${task.endTime || '-'}</td>
+                <td style="text-align: center;">
+                    <button style="background:none; border:none; cursor:pointer; margin-right:5px; font-size:1.1rem;" onclick="editTask('${today}', '${task.id}')">✏️</button>
+                    <button style="background:none; border:none; cursor:pointer; font-size:1.1rem;" onclick="deleteTask('${today}', '${task.id}')">🗑</button>
+                </td>
+                <td style="text-align: center;">
+                    <select class="status-select ${selectClass}" onchange="changeTaskStatus('${today}', '${task.id}', this.value)">
+                        <option value="waiting" ${!task.done ? 'selected' : ''}>Đang chờ</option>
+                        <option value="done" ${task.done ? 'selected' : ''}>Hoàn thành</option>
+                    </select>
+                </td>
+            </tr>
         `;
-        listEl.insertAdjacentHTML('beforeend', html);
+        stt++;
     });
 
     if (!hasTasks) {
-        listEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">Chưa có công việc nào. Bấm "+ Thêm việc" để bắt đầu.</p>';
+        tableHTML += `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-secondary);">Chưa có công việc nào. Bấm "+ Thêm việc" để bắt đầu.</td></tr>`;
     }
+
+    tableHTML += `</tbody></table></div>`;
+    listEl.innerHTML = tableHTML;
 
     renderWeekLog();
 }
+
+window.changeTaskStatus = function(date, id, val) {
+    const task = dailyTasks[date].find(t => t.id === id);
+    if (task) {
+        task.done = (val === 'done');
+        saveDailyTasks();
+        renderDailyTasks();
+    }
+};
 
 function getTaskTypeInfo(type) {
     if (type === 'work') return { bg: '#3b82f6', icon: '💼 CV', name: 'Công Việc' };
@@ -757,3 +815,53 @@ async function autoArchiveOldTasks() {
         console.log(`Successfully archived ${successCount} dates.`);
     }
 }
+
+// ==========================================
+// VOICE INPUT LOGIC
+// ==========================================
+window.startVoiceInput = function(inputId, btnId) {
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(inputId);
+    
+    if (!('webkitSpeechRecognition' in window)) {
+        alert('Trình duyệt của bạn không hỗ trợ nhận diện giọng nói. Vui lòng dùng Chrome hoặc Edge.');
+        return;
+    }
+    
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'vi-VN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    
+    recognition.onstart = function() {
+        btn.style.backgroundColor = '#ef4444';
+        btn.style.color = 'white';
+        btn.innerText = '🔴';
+    };
+    
+    recognition.onresult = function(event) {
+        const speechResult = event.results[0][0].transcript;
+        if (input.tagName.toLowerCase() === 'textarea') {
+            input.value += (input.value ? '\n' : '') + speechResult;
+        } else {
+            input.value += (input.value ? ' ' : '') + speechResult;
+        }
+    };
+    
+    recognition.onspeechend = function() {
+        recognition.stop();
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+        alert('Lỗi nhận diện giọng nói: ' + event.error);
+    };
+    
+    recognition.onend = function() {
+        btn.style.backgroundColor = '';
+        btn.style.color = '';
+        btn.innerText = '🎤';
+    };
+    
+    recognition.start();
+};

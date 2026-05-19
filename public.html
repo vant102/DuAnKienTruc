@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư viện Dự Án</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    
+    <div class="container glass-panel">
+        <header>
+            <div class="header-main">
+                <div class="title-group">
+                    <img src="logo.jpg" alt="Logo cá nhân" class="site-logo">
+                    <h1>Thư viện Dự Án</h1>
+                </div>
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="all-projects">All Project</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section id="all-projects" class="tab-content active">
+                <div class="board-header">
+                    <h2>Tất cả dự án</h2>
+                    <div class="filters">
+                        <input type="text" id="searchKeyword" class="filter-input" placeholder="Tìm tên, địa điểm...">
+                        <select id="filterNam" class="filter-input"><option value="">Tất cả năm</option></select>
+                        <select id="filterTheLoai" class="filter-input"><option value="">Tất cả thể loại</option></select>
+                        <select id="filterTrangThai" class="filter-input"><option value="">Tất cả trạng thái</option></select>
+                    </div>
+                </div>
+                <div class="grid-container library-grid" id="library-grid">
+                    <!-- Cards will be injected here by JS -->
+                </div>
+            </section>
+        </main>
+    </div> <!-- Kết thúc container -->
+
+    <!-- Glass Modal -->
+    <div id="details-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <button class="modal-close" onclick="closeModal(event)">&times;</button>
+            <div class="modal-header">
+                <h2 id="modal-title">Chi tiết</h2>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <div id="modal-info" class="modal-info-grid"></div>
+                <div id="modal-gallery" class="modal-gallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox for Fullscreen Image Viewing -->
+    <div id="lightbox" class="lightbox-overlay" onclick="closeLightbox(event)">
+        <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+        <button class="lightbox-prev" onclick="changeLightboxImage(-1, event)">&#10094;</button>
+        <img id="lightbox-img" class="lightbox-img" src="">
+        <button class="lightbox-next" onclick="changeLightboxImage(1, event)">&#10095;</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

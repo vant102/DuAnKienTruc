@@ -1,0 +1,9 @@
+{
+  "name": "Mini Task Widget",
+  "short_name": "Mini Task",
+  "start_url": "mini-task.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "description": "Widget thu nhỏ để check done công việc nhanh."
+}
