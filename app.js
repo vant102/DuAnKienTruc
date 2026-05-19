@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Filter event listeners cho tab All Projects
-    document.querySelectorAll('.filter-input').forEach(input => {
+    const filterInputs = document.querySelectorAll('.filter-input');
+    filterInputs.forEach(input => {
         input.addEventListener('change', filterLibrary);
         input.addEventListener('input', filterLibrary);
     });
@@ -103,6 +104,7 @@ window.openLocalFolder = async function(path) {
 
 function renderProjectWorking(projects) {
     const grid = document.getElementById('project-grid');
+    if (!grid) return; // Kiểm tra an toàn cho public.html
     grid.innerHTML = '';
     projects.forEach(project => {
         const statusClass = getStatusClass(project.Status);
@@ -135,6 +137,7 @@ function renderProjectWorking(projects) {
 
 function renderStudyPlan(plans) {
     const grid = document.getElementById('study-grid');
+    if (!grid) return; // Kiểm tra an toàn cho public.html
     grid.innerHTML = '';
     plans.forEach(plan => {
         const statusClass = getStatusClass(plan.Status);
@@ -187,6 +190,7 @@ function populateFilters(projects) {
     
     const fillSelect = (id, set) => {
         const select = document.getElementById(id);
+        if (!select) return; // Kiểm tra an toàn cho public.html
         Array.from(set).sort().reverse().forEach(val => {
             select.insertAdjacentHTML('beforeend', `<option value="${val}">${val}</option>`);
         });
@@ -198,6 +202,7 @@ function populateFilters(projects) {
 
 function renderAllProjects(projects) {
     const grid = document.getElementById('library-grid');
+    if (!grid) return; // Kiểm tra an toàn cho public.html
     grid.innerHTML = '';
     const isOnline = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'file:';
 
@@ -435,8 +440,12 @@ function setupPinProtection() {
     document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') {
             e.preventDefault();
-            document.getElementById('pin-overlay').classList.add('active');
-            document.getElementById('pin-input').focus();
+            const pinOverlay = document.getElementById('pin-overlay');
+            if (pinOverlay) {
+                pinOverlay.classList.add('active');
+                const pinInput = document.getElementById('pin-input');
+                if (pinInput) pinInput.focus();
+            }
         }
     });
 
@@ -450,8 +459,12 @@ function setupPinProtection() {
             clearTimeout(tapTimeout);
             if (tapCount >= 3) {
                 tapCount = 0;
-                document.getElementById('pin-overlay').classList.add('active');
-                document.getElementById('pin-input').focus();
+                const pinOverlay = document.getElementById('pin-overlay');
+                if (pinOverlay) {
+                    pinOverlay.classList.add('active');
+                    const pinInput = document.getElementById('pin-input');
+                    if (pinInput) pinInput.focus();
+                }
             } else {
                 tapTimeout = setTimeout(() => { tapCount = 0; }, 500); // Reset after 500ms
             }
@@ -460,28 +473,36 @@ function setupPinProtection() {
 
     // Auto verify on 6 chars input
     const pinInput = document.getElementById('pin-input');
-    pinInput.addEventListener('input', (e) => {
-        document.getElementById('pin-error').style.display = 'none';
-        if (e.target.value.length === 6) {
-            verifyPin();
-        }
-    });
-    
-    // Enter key
-    pinInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') verifyPin();
-    });
+    if (pinInput) {
+        pinInput.addEventListener('input', (e) => {
+            const pinError = document.getElementById('pin-error');
+            if (pinError) pinError.style.display = 'none';
+            if (e.target.value.length === 6) {
+                verifyPin();
+            }
+        });
+        
+        // Enter key
+        pinInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verifyPin();
+        });
+    }
 }
 
 window.closePinOverlay = function(e) {
     if (e) e.stopPropagation();
-    document.getElementById('pin-overlay').classList.remove('active');
-    document.getElementById('pin-input').value = '';
-    document.getElementById('pin-error').style.display = 'none';
+    const pinOverlay = document.getElementById('pin-overlay');
+    if (pinOverlay) pinOverlay.classList.remove('active');
+    const pinInput = document.getElementById('pin-input');
+    if (pinInput) pinInput.value = '';
+    const pinError = document.getElementById('pin-error');
+    if (pinError) pinError.style.display = 'none';
 };
 
 window.verifyPin = async function() {
-    const input = document.getElementById('pin-input').value;
+    const pinInput = document.getElementById('pin-input');
+    if (!pinInput) return;
+    const input = pinInput.value;
     const hash = await sha256(input);
     
     if (hash === SECRET_PIN_HASH) {
@@ -498,12 +519,14 @@ window.verifyPin = async function() {
                 tabBtns.forEach(b => b.classList.remove('active'));
                 tabContents.forEach(c => c.classList.remove('active'));
                 targetBtn.classList.add('active');
-                document.getElementById(window.pendingTabTarget).classList.add('active');
+                const targetContent = document.getElementById(window.pendingTabTarget);
+                if (targetContent) targetContent.classList.add('active');
             }
             window.pendingTabTarget = null;
         }
     } else {
-        document.getElementById('pin-error').style.display = 'block';
+        const pinError = document.getElementById('pin-error');
+        if (pinError) pinError.style.display = 'block';
     }
 };
 
@@ -546,6 +569,7 @@ function renderDailyTasks() {
     todayTasks.sort((a, b) => (a.startTime || '24:00').localeCompare(b.startTime || '24:00'));
 
     const listEl = document.getElementById('daily-tasks-list');
+    if (!listEl) return; // Kiểm tra an toàn cho public.html
     
     let tableHTML = `
         <div class="daily-table-container">
@@ -630,6 +654,7 @@ function getTaskTypeInfo(type) {
 
 function renderWeekLog() {
     const tbody = document.getElementById('daily-history-tbody');
+    if (!tbody) return; // Kiểm tra an toàn cho public.html
     tbody.innerHTML = '';
     
     // Sort dates descending
