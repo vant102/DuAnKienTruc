@@ -407,6 +407,37 @@ window.changeLightboxImage = function(step, e) {
 const DAILY_STORAGE_KEY = 'daily_tasks';
 let dailyTasks = {};
 let currentDailyFilter = 'all';
+const DAILY_API_URL = 'https://script.google.com/macros/s/AKfycbxl3nA-4xepVUE-DCMKPBUO-d_97a4FjtfDFn2V4Iv6NxzUE0BQzQe9YjLbv0iZqUXw/exec';
+
+async function fetchDailyTasksAPI() {
+    try {
+        const response = await fetch(DAILY_API_URL);
+        const data = await response.json();
+        if (data && !data.error && !data.status) { // if status is returned, it might be an error or success from POST
+            // Merge to preserve offline changes if needed, but for now simple overwrite
+            dailyTasks = data;
+            localStorage.setItem(DAILY_STORAGE_KEY, JSON.stringify(dailyTasks));
+            renderDailyTasks();
+        }
+    } catch (error) {
+        console.error("Lỗi lấy dữ liệu API:", error);
+    }
+}
+
+async function syncDailyTasksAPI() {
+    try {
+        await fetch(DAILY_API_URL, {
+            method: 'POST',
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            },
+            body: JSON.stringify(dailyTasks)
+        });
+    } catch (error) {
+        console.error("Lỗi đồng bộ API:", error);
+    }
+}
 
 // Simple SHA-256 hash for PIN (Pin is "123456" for example: 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92)
 const SECRET_PIN_HASH = '630e95c2622e5cbd4d83a65394ebb142b8161201982ed4b8eafce98c98234ade';
@@ -535,15 +566,18 @@ function loadDailyTasks() {
     if (stored) {
         try {
             dailyTasks = JSON.parse(stored);
-        } catch (e) {
-            console.error("Error parsing daily tasks:", e);
+        } catch(e) {
             dailyTasks = {};
         }
     }
+    // Chạy ngầm API để lấy dữ liệu mới nhất nếu có
+    fetchDailyTasksAPI();
 }
 
 function saveDailyTasks() {
     localStorage.setItem(DAILY_STORAGE_KEY, JSON.stringify(dailyTasks));
+    // Đẩy dữ liệu ngầm lên Google Sheets
+    syncDailyTasksAPI();
 }
 
 function getTodayString() {

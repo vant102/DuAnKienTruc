@@ -59,7 +59,7 @@
 <body>
     <div class="header">
         <h3 id="date-title">Hôm nay</h3>
-        <button class="btn-refresh" onclick="renderTasks()">🔄 Làm mới</button>
+        <button class="btn-refresh" onclick="syncWithAPI()">🔄 Làm mới</button>
     </div>
     <div class="task-list" id="task-list">
         <!-- Tasks will be injected here -->
@@ -70,6 +70,36 @@
 
     <script>
         const DAILY_STORAGE_KEY = 'daily_tasks';
+        const DAILY_API_URL = 'https://script.google.com/macros/s/AKfycbxl3nA-4xepVUE-DCMKPBUO-d_97a4FjtfDFn2V4Iv6NxzUE0BQzQe9YjLbv0iZqUXw/exec';
+
+        async function syncWithAPI() {
+            try {
+                document.querySelector('.btn-refresh').innerText = '⏳ Đang tải...';
+                const response = await fetch(DAILY_API_URL);
+                const data = await response.json();
+                if (data && !data.error && !data.status) {
+                    localStorage.setItem(DAILY_STORAGE_KEY, JSON.stringify(data));
+                    renderTasks();
+                }
+            } catch (e) {
+                console.error("API error", e);
+            } finally {
+                document.querySelector('.btn-refresh').innerText = '🔄 Làm mới';
+            }
+        }
+
+        async function pushToAPI() {
+            const stored = localStorage.getItem(DAILY_STORAGE_KEY);
+            if (!stored) return;
+            try {
+                await fetch(DAILY_API_URL, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: stored
+                });
+            } catch (e) {}
+        }
         
         function getTodayString() {
             const d = new Date();
@@ -118,6 +148,7 @@
                     task.done = !task.done;
                     localStorage.setItem(DAILY_STORAGE_KEY, JSON.stringify(dailyTasks));
                     renderTasks();
+                    pushToAPI(); // Đẩy lên Google Sheets
                 }
             }
         };
@@ -130,6 +161,7 @@
         });
         
         renderTasks();
+        syncWithAPI(); // Tải API tự động khi mở Widget
     </script>
 </body>
 </html>
