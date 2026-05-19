@@ -463,16 +463,6 @@ function initDailyLog() {
             console.warn("Chạy Online: Tính năng Auto-Archive bị vô hiệu hóa. Dữ liệu cũ sẽ lưu trong localStorage.");
         }
         renderDailyTasks();
-    } else {
-        // Nếu chạy Online và chưa nhập PIN, đồng thời đang ở trang mini-task.html
-        if (window.location.pathname.includes('mini-task')) {
-            const pinOverlay = document.getElementById('pin-overlay');
-            if (pinOverlay) {
-                pinOverlay.classList.add('active');
-                const pinInput = document.getElementById('pin-input');
-                if (pinInput) pinInput.focus();
-            }
-        }
     }
 }
 
